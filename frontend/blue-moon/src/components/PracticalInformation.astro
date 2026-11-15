@@ -1,5 +1,18 @@
 ---
-// Conserved for the future dedicated practical information page.
+import { getNextEdition, getPracticalInformation, safeUrl, type Block } from "../lib/strapi";
+
+const edition = await getNextEdition();
+const venues = edition?.lieux ?? [];
+const information = edition ? await getPracticalInformation(edition.documentId) : [];
+const volunteerUrl = safeUrl(edition?.lienBenevolat);
+
+function blockText(node: Block): string {
+  if (typeof node.text === "string") return node.text;
+  return (node.children ?? []).map(blockText).join("");
+}
+function paragraphs(nodes: Block[] = []) {
+  return nodes.map(blockText).map(text => text.trim()).filter(Boolean);
+}
 ---
 
 <section class="information" id="infos-pratiques" aria-labelledby="info-title">
@@ -22,7 +35,18 @@
         <div><p class="eyebrow">Point de rendez-vous</p><h2 id="venue-title">Le lieu</h2></div>
         <p>Un espace singulier et accessible, choisi pour accueillir toute l’énergie du festival.</p>
       </div>
-      <div class="info-grid venue-grid" id="venue-grid"></div>
+      <div class="info-grid venue-grid">
+        {venues.map(venue => {
+          const mapUrl = safeUrl(venue.lienCarte);
+          const address = [venue.adresse, venue.codePostal, venue.ville].filter(Boolean).join(" ");
+          return <article class="venue-card">
+            <h3>{venue.nom}</h3>
+            {address && <p class="venue-address">{address}</p>}
+            {venue.informationsAcces && <p>{venue.informationsAcces}</p>}
+            {mapUrl && <a href={mapUrl} class="text-link" target="_blank" rel="noopener noreferrer">Voir sur la carte ↗</a>}
+          </article>;
+        })}
+      </div>
     </section>
 
     <section class="essentials-section" aria-labelledby="essentials-title">
@@ -30,13 +54,22 @@
         <div><p class="eyebrow">L’essentiel</p><h2 id="essentials-title">Préparez votre visite</h2></div>
         <p>Retrouvez ici les informations publiées par l’équipe organisatrice.</p>
       </div>
-      <div class="info-grid practical-grid" id="practical-grid"></div>
-      <p id="practical-status" role="status"></p>
+      <div class="info-grid practical-grid">
+        {information.map(info => {
+          const externalUrl = safeUrl(info.lienExterne);
+          return <article class="practical-card">
+            <h3>{info.titre}</h3>
+            {info.resume && <p>{info.resume}</p>}
+            {paragraphs(info.contenu).map(text => <p>{text}</p>)}
+            {externalUrl && <a class="text-link" href={externalUrl} target="_blank" rel="noopener noreferrer">{info.libelleBouton || "En savoir plus ↗"}</a>}
+          </article>;
+        })}
+      </div>
     </section>
 
-    <article class="volunteer-card" id="benevolat" hidden>
+    {volunteerUrl && <article class="volunteer-card" id="benevolat">
       <div><p class="eyebrow">Participer autrement</p><h2>Rejoignez l’aventure</h2><p>Envie de vivre Blue Moon de l’intérieur ? Découvrez les missions bénévoles du festival.</p></div>
-      <a id="volunteer-link" class="button button-outline">Devenir bénévole <span aria-hidden="true">↗</span></a>
-    </article>
+      <a href={volunteerUrl} class="button button-outline" target="_blank" rel="noopener noreferrer">Devenir bénévole <span aria-hidden="true">↗</span></a>
+    </article>}
   </div>
 </section>

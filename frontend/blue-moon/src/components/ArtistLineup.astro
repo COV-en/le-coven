@@ -1,100 +1,42 @@
+---
+import { editionDates } from "../lib/edition-dates";
+import { getLineup } from "../lib/lineup";
+import { getNextEdition, safeUrl } from "../lib/strapi";
+
+const [lineup, edition] = await Promise.all([getLineup(), getNextEdition()]);
+const festivalDates = editionDates(edition?.dateDebut, edition?.dateFin);
+const dayLabel = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris" });
+---
+
 <section class="lineup section-shell" aria-labelledby="lineup-title">
-  <div class="section-heading">
-    <p class="eyebrow">La programmation</p>
-    <h1 id="lineup-title">Line-up</h1>
-  </div>
-  <p id="lineup-status" role="status">Chargement de la programmation…</p>
-  <div id="lineup-days"></div>
+  <div class="section-heading"><p class="eyebrow">La programmation</p><h1 id="lineup-title">Line-up</h1></div>
+  {lineup.length === 0 && <p>La programmation sera annoncée prochainement.</p>}
+  {lineup.map(({ day, artists }) => (
+    <div>
+      <h2 class="lineup-date">{day ? dayLabel.format(new Date(`${day}T12:00:00Z`)) : festivalDates ?? "Programmation du festival"}</h2>
+      <ul class="lineup-grid">
+        {artists.map(artist => {
+          const soundcloud = safeUrl(artist.lienSoundcloud);
+          const spotify = safeUrl(artist.lienSpotify);
+          return (
+            <li class="artist-card">
+              <div class="artist-portrait">{artist.imageUrl && <img src={artist.imageUrl} alt="" loading="lazy" width="600" height="600" />}</div>
+              <div class="artist-copy">
+                <h3>{artist.nom}</h3>
+                {artist.genres && <p class="artist-genres">{artist.genres}</p>}
+                {soundcloud && <a class="artist-listen" href={soundcloud} target="_blank" rel="noopener noreferrer" aria-label={`Écouter ${artist.nom} sur SoundCloud (nouvel onglet)`}>SoundCloud ↗</a>}
+                {spotify && <a class="artist-listen" href={spotify} target="_blank" rel="noopener noreferrer" aria-label={`Écouter ${artist.nom} sur Spotify (nouvel onglet)`}>Spotify ↗</a>}
+              </div>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  ))}
 </section>
 
-<script>
-  import { getLineup } from "../lib/lineup";
-  import { editionDates } from "../lib/edition-dates";
-  import { getNextEdition, safeUrl } from "../lib/strapi";
-
-  const days = document.querySelector<HTMLElement>("#lineup-days")!;
-  const status = document.querySelector<HTMLElement>("#lineup-status")!;
-  const dayLabel = new Intl.DateTimeFormat("fr-FR", {
-    weekday: "long", day: "numeric", month: "long", timeZone: "Europe/Paris",
-  });
-
-  async function load() {
-    try {
-      const lineup = await getLineup();
-      const edition = await getNextEdition();
-      const festivalDates = editionDates(edition?.dateDebut, edition?.dateFin);
-      for (const { day, artists } of lineup) {
-        const heading = document.createElement("h2");
-        heading.className = "lineup-date";
-        heading.textContent = day
-          ? dayLabel.format(new Date(day + "T12:00:00Z"))
-          : festivalDates ?? "Programmation du festival";
-        const grid = document.createElement("ul");
-        grid.className = "lineup-grid";
-        grid.append(...artists.map(artist => {
-          const card = document.createElement("li");
-          card.className = "artist-card";
-          const portrait = document.createElement("div");
-          portrait.className = "artist-portrait";
-          if (artist.imageUrl) {
-            const image = document.createElement("img");
-            image.src = artist.imageUrl;
-            image.alt = "";
-            image.loading = "lazy";
-            image.width = 600;
-            image.height = 600;
-            image.addEventListener("error", () => image.remove(), { once: true });
-            portrait.append(image);
-          }
-          const copy = document.createElement("div");
-          copy.className = "artist-copy";
-          const title = document.createElement("h3");
-          title.textContent = artist.nom;
-          copy.append(title);
-          if (artist.genres) {
-            const paragraph = document.createElement("p");
-            paragraph.className = "artist-genres";
-            paragraph.textContent = artist.genres;
-            copy.append(paragraph);
-          }
-          for (const [platform, url] of [["SoundCloud", artist.lienSoundcloud], ["Spotify", artist.lienSpotify]]) {
-            const href = safeUrl(url);
-            if (!href) continue;
-            const link = document.createElement("a");
-            link.className = "artist-listen";
-            link.href = href;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = platform + " ↗";
-            link.setAttribute("aria-label", `Écouter ${artist.nom} sur ${platform} (nouvel onglet)`);
-            copy.append(link);
-          }
-          card.append(portrait, copy);
-          return card;
-        }));
-        days.append(heading, grid);
-      }
-      status.textContent = lineup.length ? "" : "La programmation sera annoncée prochainement.";
-    } catch (error) {
-      console.error("Blue Moon: impossible de charger les artistes.", error);
-      status.textContent = "La programmation est temporairement indisponible.";
-    }
-  }
-  void load();
-</script>
-
 <style>
-  .lineup {
-    padding-block-start: clamp(24px, 4vw, 48px);
-  }
-
-  .lineup :global(.lineup-date) {
-    font-size: clamp(16px, 2.5vw, 22px);
-    margin-block: 24px 12px;
-  }
-
-  h1 {
-    font-size: clamp(40px, 8vw, 76px);
-    line-height: 1.1;
-  }
+  .lineup { padding-block-start: clamp(24px, 4vw, 48px); }
+  .lineup :global(.lineup-date) { font-size: clamp(16px, 2.5vw, 22px); margin-block: 24px 12px; }
+  h1 { font-size: clamp(40px, 8vw, 76px); line-height: 1.1; }
 </style>

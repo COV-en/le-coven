@@ -4,7 +4,7 @@ Run from the repository root with `npm run dev:blue-moon` (port 4322).
 
 ## Homepage artist lineup
 
-The lineup below the origin story loads directly from Strapi in the browser on each page visit. Publishing changes does not require rebuilding the site. `PUBLIC_STRAPI_URL` selects the CMS; the default is the existing Render deployment. Copy `.env.example` to `.env` to override it, then restart the dev server. Never expose a Strapi API token in a public environment variable.
+The lineup and practical information are fetched from Strapi while Astro builds the site. Visitors therefore receive complete HTML without waiting for Strapi in their browser. Publishing content requires a new Blue Moon deployment; connect a Strapi webhook to the Blue Moon Render Deploy Hook to automate that rebuild. `PUBLIC_STRAPI_URL` selects the CMS. Never expose a Strapi API token in a public environment variable.
 
 Content setup:
 

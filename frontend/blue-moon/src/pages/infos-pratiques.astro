@@ -59,12 +59,6 @@ const links = [
     </footer>
 
     <script>
-      import { loadPracticalInformationPage } from "../lib/practical-information";
-
-      void loadPracticalInformationPage().catch(error => {
-        console.error("Blue Moon: impossible de charger les informations pratiques.", error);
-      });
-
       const menuButton = document.querySelector<HTMLButtonElement>(".menu-toggle");
       const menu = document.querySelector<HTMLElement>("#mobile-nav");
       const closeMenu = () => {
