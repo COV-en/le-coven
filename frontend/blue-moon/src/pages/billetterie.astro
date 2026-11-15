@@ -4,7 +4,8 @@ import "../styles/global.css";
 
 const covenUrl = (import.meta.env.PUBLIC_COVEN_URL || "http://localhost:4321").replace(/\/$/, "");
 const shotgunUrl = "https://shotgun.live/fr/festivals/blue-moon";
-const helloAssoWidgetUrl = import.meta.env.PUBLIC_HELLOASSO_WIDGET_URL?.trim();
+const helloAssoUrl = "https://www.helloasso.com/associations/le-coven/evenements/blue-moon-festival-2026-1";
+const helloAssoWidgetUrl = `${helloAssoUrl}/widget`;
 const links = [
   { label: "Accueil", href: "/" },
   { label: "Line-up", href: "/line-up" },
@@ -51,12 +52,38 @@ const links = [
     </header>
 
     <main id="main" class="ticketing-page">
+      <section class="helloasso-section section-shell" aria-labelledby="helloasso-title">
+        <div class="section-heading helloasso-heading">
+          <div>
+            <p class="eyebrow">Billetterie officielle</p>
+            <h1 id="helloasso-title">Réservez avec HelloAsso</h1>
+          </div>
+          <p>Choisissez vos billets et finalisez votre réservation directement sur cette page.</p>
+        </div>
+        <div class="helloasso-frame">
+          <iframe
+            id="haWidget"
+            class="helloasso-widget"
+            src={helloAssoWidgetUrl}
+            title="Billetterie HelloAsso du festival Blue Moon"
+            allow="payment 'self' https://paymenthub.helloassopay.com https://helloasso.com"
+            allowtransparency="true"
+            scrolling="auto"
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </div>
+        <p class="helloasso-fallback">
+          La billetterie ne s’affiche pas ?
+          <a href={helloAssoUrl} target="_blank" rel="noopener noreferrer">Ouvrir la billetterie sur HelloAsso <span aria-hidden="true">↗</span></a>
+        </p>
+      </section>
+
       <section id="reserver" class="ticketing-hero section-shell" aria-labelledby="ticketing-title">
         <div class="ticketing-stage">
           <div class="ticketing-main">
             <p class="ticket-live"><span aria-hidden="true"></span> Billetterie ouverte</p>
             <p class="eyebrow">Blue Moon Festival 2027</p>
-            <h1 id="ticketing-title" class="ticketing-title">Réservez<br />votre place</h1>
+            <h2 id="ticketing-title" class="ticketing-title">Réservez<br />votre place</h2>
             <p class="ticketing-lead">Deux jours de musique et de création collective dans un lieu singulier, au cœur de Tourcoing.</p>
             <dl class="ticketing-facts">
               <div><dt>Date</dt><dd>21 — 22 mai 2027</dd></div>
@@ -84,21 +111,6 @@ const links = [
         </div>
       </section>
 
-      {helloAssoWidgetUrl && (
-        <section class="helloasso-section section-shell" aria-labelledby="helloasso-title">
-          <div class="section-heading">
-            <p class="eyebrow">Autre moyen de réservation</p>
-            <h2 id="helloasso-title">HelloAsso</h2>
-          </div>
-          <iframe
-            class="helloasso-widget"
-            src={helloAssoWidgetUrl}
-            title="Billetterie Blue Moon sur HelloAsso"
-            loading="lazy"
-            referrerpolicy="strict-origin-when-cross-origin"
-          ></iframe>
-        </section>
-      )}
     </main>
 
     <footer class="section-shell">
@@ -107,6 +119,14 @@ const links = [
     </footer>
 
     <script>
+      window.addEventListener("message", event => {
+        if (event.origin !== "https://www.helloasso.com") return;
+        const height = Number(event.data?.height);
+        const widget = document.querySelector<HTMLIFrameElement>("#haWidget");
+        if (!widget || !Number.isFinite(height) || height <= 0) return;
+        widget.style.height = `${Math.min(Math.max(height, 600), 5000)}px`;
+      });
+
       const menuButton = document.querySelector<HTMLButtonElement>(".menu-toggle");
       const menu = document.querySelector<HTMLElement>("#mobile-nav");
       const closeMenu = () => {
