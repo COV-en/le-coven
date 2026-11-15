@@ -1,5 +1,6 @@
 ---
 import FestivalBrand from "../components/FestivalBrand.astro";
+import SeoHead from "../components/SeoHead.astro";
 import "../styles/global.css";
 const covenUrl = (import.meta.env.PUBLIC_COVEN_URL || "http://localhost:4321").replace(/\/$/, "");
 const ticketUrl = "/billetterie";
@@ -13,11 +14,11 @@ const links = [
 <!doctype html>
 <html lang="fr">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#050410" />
-    <meta name="description" content="" />
-    <title>Festival</title>
+    <SeoHead
+      title="Blue Moon Festival 2027 à Tourcoing | Le Coven"
+      description="Découvrez Blue Moon Festival, les 21 et 22 mai 2027 à Tourcoing : programmation, artistes, informations pratiques et billetterie."
+      path="/"
+    />
   </head>
   <body>
     <a class="skip-link" href="#main">Aller au contenu</a>

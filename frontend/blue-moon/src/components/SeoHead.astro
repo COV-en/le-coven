@@ -1,0 +1,78 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  path?: string;
+  image?: string;
+  imageAlt?: string;
+}
+
+const {
+  title,
+  description,
+  path = "/",
+  image = "/images/hero-concert.jfif",
+  imageAlt = "Le public du festival Blue Moon réuni devant la scène",
+} = Astro.props;
+
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL || "https://blue-moon.lecoven.fr").replace(/\/$/, "");
+const covenUrl = (import.meta.env.PUBLIC_COVEN_URL || "https://lecoven.fr").replace(/\/$/, "");
+const canonicalUrl = new URL(path, `${siteUrl}/`).href;
+const imageUrl = new URL(image, `${siteUrl}/`).href;
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${covenUrl}/#organization`,
+      name: "Le Coven",
+      url: covenUrl,
+      logo: new URL("/images/logo-le-coven-v2.png", `${siteUrl}/`).href,
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      name: "Blue Moon Festival",
+      url: `${siteUrl}/`,
+      inLanguage: "fr-FR",
+      publisher: { "@id": `${covenUrl}/#organization` },
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${canonicalUrl}#webpage`,
+      url: canonicalUrl,
+      name: title,
+      description,
+      inLanguage: "fr-FR",
+      isPartOf: { "@id": `${siteUrl}/#website` },
+      about: { "@type": "Thing", name: "Blue Moon Festival 2027" },
+    },
+  ],
+};
+---
+
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="theme-color" content="#050410" />
+<meta name="description" content={description} />
+<meta name="robots" content="index, follow, max-image-preview:large" />
+<link rel="canonical" href={canonicalUrl} />
+<link rel="icon" type="image/png" href="/images/logo-le-coven-v2.png" />
+
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="fr_FR" />
+<meta property="og:site_name" content="Blue Moon Festival" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={canonicalUrl} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:alt" content={imageAlt} />
+
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={imageAlt} />
+
+<title>{title}</title>
+<script type="application/ld+json" set:html={JSON.stringify(structuredData)} />

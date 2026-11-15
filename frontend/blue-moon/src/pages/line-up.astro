@@ -1,5 +1,6 @@
 ---
 import FestivalBrand from "../components/FestivalBrand.astro";
+import SeoHead from "../components/SeoHead.astro";
 import "../styles/global.css";
 import ArtistLineup from "../components/ArtistLineup.astro";
 
@@ -15,11 +16,11 @@ const links = [
 <!doctype html>
 <html lang="fr">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#050410" />
-    <meta name="description" content="Découvrez les artistes du festival Blue Moon." />
-    <title>Line-up · Blue Moon</title>
+    <SeoHead
+      title="Line-up Blue Moon Festival 2027 | Artistes"
+      description="Découvrez les artistes et la programmation de Blue Moon Festival 2027, organisé les 21 et 22 mai à Tourcoing par Le Coven."
+      path="/line-up"
+    />
   </head>
   <body>
     <a class="skip-link" href="#main">Aller au contenu</a>

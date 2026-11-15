@@ -34,8 +34,6 @@ async function loadEdition() {
 async function loadSettings() {
   const settings = await getSettings();
   if (!settings) throw new Error("Publish the Blue Moon Site Settings entry in Strapi.");
-  document.title = settings.titreSeoParDefaut || settings.nomSite;
-  document.querySelector('meta[name="description"]')?.setAttribute("content", settings.descriptionSeoParDefaut || settings.descriptionSite || "");
   const favicon = mediaUrl(settings.favicon);
   if (favicon) {
     const icon = document.querySelector<HTMLLinkElement>('link[rel="icon"]') || document.createElement("link");

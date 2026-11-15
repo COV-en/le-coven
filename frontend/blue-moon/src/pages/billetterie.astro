@@ -1,5 +1,6 @@
 ---
 import FestivalBrand from "../components/FestivalBrand.astro";
+import SeoHead from "../components/SeoHead.astro";
 import "../styles/global.css";
 
 const covenUrl = (import.meta.env.PUBLIC_COVEN_URL || "http://localhost:4321").replace(/\/$/, "");
@@ -16,11 +17,11 @@ const links = [
 <!doctype html>
 <html lang="fr">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#050410" />
-    <meta name="description" content="Réservez vos billets pour le festival Blue Moon." />
-    <title>Billetterie · Blue Moon</title>
+    <SeoHead
+      title="Billetterie Blue Moon Festival 2027 | Réservation"
+      description="Réservez vos billets pour Blue Moon Festival, les 21 et 22 mai 2027 à Tourcoing, via les billetteries officielles HelloAsso et Shotgun."
+      path="/billetterie"
+    />
   </head>
   <body>
     <a class="skip-link" href="#main">Aller au contenu</a>
