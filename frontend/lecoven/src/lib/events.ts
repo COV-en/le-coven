@@ -27,12 +27,14 @@ export function dateLabel(value?: string, time = false) {
 }
 const categories: Record<string, string> = { concert: "Concert", festival: "Festival", party: "Soirée", workshop: "Atelier", meeting: "Rencontre", conference: "Conférence", other: "Événement" };
 export const category = (event: EventEntry) => categories[event.categorie] || "Événement";
-export async function getEvents(): Promise<EventEntry[]> {
+let pendingEvents: Promise<EventEntry[]> | undefined;
+
+async function loadEvents(): Promise<EventEntry[]> {
   const events: EventEntry[] = [];
   let page = 1;
   do {
     const query = new URLSearchParams({ "populate[0]": "imageCouverture", "populate[1]": "lieu", "populate[2]": "galerie", "sort": "dateDebut:asc", "pagination[pageSize]": "100", "pagination[page]": String(page), status: "published" });
-    const response = await fetch(base + "/api/events?" + query, { signal: AbortSignal.timeout(30000) });
+    const response = await fetch(base + "/api/events?" + query, { signal: AbortSignal.timeout(60000) });
     if (!response.ok) throw new Error("Strapi events: HTTP " + response.status);
     const payload = await response.json();
     if (!Array.isArray(payload.data)) throw new Error("Invalid Strapi events response");
@@ -41,4 +43,14 @@ export async function getEvents(): Promise<EventEntry[]> {
     page++;
   } while (true);
   return events;
+}
+
+export function getEvents(): Promise<EventEntry[]> {
+  if (!pendingEvents) {
+    pendingEvents = loadEvents().catch(error => {
+      pendingEvents = undefined;
+      throw error;
+    });
+  }
+  return pendingEvents;
 }

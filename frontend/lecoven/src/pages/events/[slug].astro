@@ -13,8 +13,54 @@ const online = safeUrl(event.lienEnLigne);
 const facebook = safeUrl(event.lienFacebook);
 const map = safeUrl(event.lieu?.lienCarte);
 const past = isPast(event);
+const eventTitle = event.titre.trim();
+const rawEventDescription = event.descriptionCourte?.replace(/\s+/g, " ").trim()
+  || `Découvrez ${eventTitle}, un événement organisé par Le Coven dans les Hauts-de-France.`;
+const eventDescription = rawEventDescription.length > 160
+  ? `${rawEventDescription.slice(0, 157).replace(/\s+\S*$/, "")}…`
+  : rawEventDescription;
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL || "https://lecoven.fr").replace(/\/$/, "");
+const eventUrl = new URL(`/events/${encodeURIComponent(event.slug)}`, `${siteUrl}/`).href;
+const eventImage = mediaUrl(event.imageCouverture) || new URL("/images/hero-concert.jfif", `${siteUrl}/`).href;
+const eventLocation = event.evenementEnLigne
+  ? { "@type": "VirtualLocation", url: online || eventUrl }
+  : {
+      "@type": "Place",
+      name: event.lieu?.nom || event.lieuPersonnalise || "Lieu à annoncer",
+      ...(event.lieu && (event.lieu.adresse || event.lieu.ville || event.lieu.codePostal) ? {
+        address: {
+          "@type": "PostalAddress",
+          streetAddress: event.lieu.adresse,
+          postalCode: event.lieu.codePostal,
+          addressLocality: event.lieu.ville,
+          addressCountry: "FR",
+        },
+      } : {}),
+    };
+const eventStructuredData = {
+  "@type": "Event",
+  "@id": `${eventUrl}#event`,
+  name: eventTitle,
+  description: eventDescription,
+  url: eventUrl,
+  image: [eventImage],
+  startDate: event.dateDebut,
+  ...(event.dateFin ? { endDate: event.dateFin } : {}),
+  eventStatus: event.annule ? "https://schema.org/EventCancelled" : "https://schema.org/EventScheduled",
+  eventAttendanceMode: event.evenementEnLigne ? "https://schema.org/OnlineEventAttendanceMode" : "https://schema.org/OfflineEventAttendanceMode",
+  location: eventLocation,
+  organizer: { "@type": "Organization", name: "Le Coven", url: `${siteUrl}/` },
+  ...(ticket ? { offers: { "@type": "Offer", url: ticket, availability: event.complet ? "https://schema.org/SoldOut" : "https://schema.org/InStock", priceCurrency: "EUR" } } : {}),
+};
 ---
-<BaseLayout title={`${event.titre} — Le Coven`} description={event.descriptionCourte}>
+<BaseLayout
+  title={`${eventTitle} — Le Coven`}
+  description={eventDescription}
+  image={eventImage}
+  imageAlt={event.imageCouverture?.alternativeText || eventTitle}
+  type="article"
+  structuredData={eventStructuredData}
+>
   <div class="event-detail events-content">
     <a class="event-link" href="/events">← Tous les événements</a>
     <header class="event-detail__header"><p class="event-eyebrow">{category(event)} · {dateLabel(event.dateDebut)}</p><h1>{event.titre}</h1><p>{event.descriptionCourte}</p>{(event.annule || event.complet || past) && <span class="event-status">{event.annule ? "Événement annulé" : past ? "Événement passé" : "Complet"}</span>}</header>

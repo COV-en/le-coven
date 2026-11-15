@@ -7,12 +7,63 @@ import CollectiveStrip from "../components/layout/CollectiveStrip.astro";
 interface Props {
   title: string;
   description?: string;
+  image?: string;
+  imageAlt?: string;
+  type?: "website" | "article";
+  structuredData?: Record<string, unknown> | Array<Record<string, unknown>>;
 }
 
 const {
   title,
   description = "Le Coven, fédération des collectifs de musiques électroniques des Hauts-de-France.",
+  image = "/images/hero-concert.jfif",
+  imageAlt = "Le public réuni lors d’un événement du Coven",
+  type = "website",
+  structuredData,
 } = Astro.props;
+
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL || "https://lecoven.fr").replace(/\/$/, "");
+const canonicalUrl = new URL(Astro.url.pathname, `${siteUrl}/`).href;
+const imageUrl = image.startsWith("http") ? image : new URL(image, `${siteUrl}/`).href;
+const organizationId = `${siteUrl}/#organization`;
+const websiteId = `${siteUrl}/#website`;
+const extraStructuredData = structuredData ? (Array.isArray(structuredData) ? structuredData : [structuredData]) : [];
+const seoGraph = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": organizationId,
+      name: "Le Coven",
+      url: `${siteUrl}/`,
+      logo: new URL("/images/logo-le-coven-v2.png", `${siteUrl}/`).href,
+      sameAs: [
+        "https://www.instagram.com/lecoven.asso/",
+        "https://www.facebook.com/LeCoven.asso",
+        "https://www.helloasso.com/associations/le-coven",
+      ],
+    },
+    {
+      "@type": "WebSite",
+      "@id": websiteId,
+      name: "Le Coven",
+      url: `${siteUrl}/`,
+      inLanguage: "fr-FR",
+      publisher: { "@id": organizationId },
+    },
+    {
+      "@type": "WebPage",
+      "@id": `${canonicalUrl}#webpage`,
+      url: canonicalUrl,
+      name: title,
+      description,
+      inLanguage: "fr-FR",
+      isPartOf: { "@id": websiteId },
+      about: { "@id": organizationId },
+    },
+    ...extraStructuredData,
+  ],
+};
 ---
 
 <!doctype html>
@@ -23,7 +74,24 @@ const {
     <meta name="description" content={description} />
     <meta name="theme-color" content="#05020d" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" type="image/png" href="/images/logo-le-coven-v2.png" />
+    <meta property="og:type" content={type} />
+    <meta property="og:locale" content="fr_FR" />
+    <meta property="og:site_name" content="Le Coven" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:alt" content={imageAlt} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <meta name="twitter:image:alt" content={imageAlt} />
     <title>{title}</title>
+    <script type="application/ld+json" set:html={JSON.stringify(seoGraph)} />
   </head>
 
   <body>
