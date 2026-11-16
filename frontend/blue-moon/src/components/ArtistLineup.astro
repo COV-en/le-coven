@@ -11,18 +11,34 @@ const dayLabel = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numer
 <section class="lineup section-shell" aria-labelledby="lineup-title">
   <div class="section-heading"><p class="eyebrow">La programmation</p><h1 id="lineup-title">Line-up</h1></div>
   {lineup.length === 0 && <p>La programmation sera annoncée prochainement.</p>}
-  {lineup.map(({ day, artists }) => (
-    <div>
-      <h2 class="lineup-date">{day ? dayLabel.format(new Date(`${day}T12:00:00Z`)) : festivalDates ?? "Programmation du festival"}</h2>
+  {lineup.map(({ day, artists }, dayIndex) => (
+    <section class="lineup-day" aria-labelledby={`lineup-day-${dayIndex}`}>
+      <div class="lineup-day-heading">
+        <span class="lineup-day-index" aria-hidden="true">{String(dayIndex + 1).padStart(2, "0")}</span>
+        <div>
+          <p class="eyebrow">Programmation</p>
+          <h2 id={`lineup-day-${dayIndex}`} class="lineup-date">{day ? dayLabel.format(new Date(`${day}T12:00:00Z`)) : festivalDates ?? "Programmation du festival"}</h2>
+        </div>
+        <p class="lineup-day-count">{artists.length} artiste{artists.length > 1 ? "s" : ""}</p>
+      </div>
       <ul class="lineup-grid">
-        {artists.map(artist => {
+        {artists.map((artist, artistIndex) => {
           const soundcloud = safeUrl(artist.lienSoundcloud);
           const spotify = safeUrl(artist.lienSpotify);
           return (
-            <li class="artist-card">
-              <div class="artist-portrait">{artist.imageUrl && <img src={artist.imageUrl} alt="" loading="lazy" width="600" height="600" />}</div>
+            <li class:list={["artist-card", artist.imageUrl && "has-image"]}>
+              {artist.imageUrl && <div class="artist-portrait">
+                <img src={artist.imageUrl} alt="" loading="lazy" width="600" height="600" />
+                <div class="artist-portrait-copy">
+                  <p class="artist-index" aria-hidden="true">{String(artistIndex + 1).padStart(2, "0")} · artiste</p>
+                  <h3>{artist.nom}</h3>
+                </div>
+              </div>}
               <div class="artist-copy">
-                <h3>{artist.nom}</h3>
+                {!artist.imageUrl && <>
+                  <p class="artist-index" aria-hidden="true">{String(artistIndex + 1).padStart(2, "0")} · artiste</p>
+                  <h3>{artist.nom}</h3>
+                </>}
                 {artist.genres && <p class="artist-genres">{artist.genres}</p>}
                 {soundcloud && <a class="artist-listen" href={soundcloud} target="_blank" rel="noopener noreferrer" aria-label={`Écouter ${artist.nom} sur SoundCloud (nouvel onglet)`}>SoundCloud ↗</a>}
                 {spotify && <a class="artist-listen" href={spotify} target="_blank" rel="noopener noreferrer" aria-label={`Écouter ${artist.nom} sur Spotify (nouvel onglet)`}>Spotify ↗</a>}
@@ -31,12 +47,11 @@ const dayLabel = new Intl.DateTimeFormat("fr-FR", { weekday: "long", day: "numer
           );
         })}
       </ul>
-    </div>
+    </section>
   ))}
 </section>
 
 <style>
   .lineup { padding-block-start: clamp(24px, 4vw, 48px); }
-  .lineup :global(.lineup-date) { font-size: clamp(16px, 2.5vw, 22px); margin-block: 24px 12px; }
   h1 { font-size: clamp(40px, 8vw, 76px); line-height: 1.1; }
 </style>

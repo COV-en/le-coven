@@ -39,22 +39,28 @@ const links = [
     </header>
     <main id="main">
       <section class="hero" id="accueil" aria-labelledby="festival-title">
+        <video
+          class="hero-video"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="metadata"
+          poster="/images/hero-concert.jfif"
+          aria-hidden="true"
+        >
+          <source src="/videos/blue-moon-hero.mp4" type="video/mp4" />
+        </video>
         <div class="hero-image" aria-hidden="true"></div>
         <div class="hero-glow" aria-hidden="true"></div>
-        <span class="star star-one" aria-hidden="true"></span><span class="star star-two" aria-hidden="true"></span><span class="star star-three" aria-hidden="true"></span><span class="star star-four" aria-hidden="true"></span>
-        <div class="hero-content">
-          <p class="festival-meta" id="edition-meta" hidden></p>
-          <h1 id="festival-title">
-            <img src="/images/blue-moon-title.png" alt="Blue Moon Festival" width="343" height="262" />
-          </h1>
-          <p class="festival-label">Une production Le Coven</p>
-          <p id="edition-description" class="cms-description" hidden></p>
-        </div>
+        <h1 id="festival-title" class="hero-video-title">Blue Moon</h1>
       </section>
       <section class="next-edition section-shell" id="prochaine-edition" aria-labelledby="next-edition-title">
         <div class="section-heading">
           <p class="eyebrow">Le prochain rendez-vous</p>
           <h2 id="next-edition-title">Prochaine édition</h2>
+          <p class="next-edition-production">Blue Moon · Une production Le Coven</p>
+          <p id="next-edition-location" class="next-edition-location" hidden></p>
         </div>
         <div class="next-edition-card">
           <div class="festival-countdown" data-festival-countdown="next-edition-details" hidden>
@@ -107,6 +113,18 @@ const links = [
       import { mountFestivalCountdown } from "../lib/edition-dates";
       mountFestivalCountdown();
       import "../lib/homepage";
+      const heroVideo = document.querySelector<HTMLVideoElement>(".hero-video");
+      const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+      const syncHeroMotion = () => {
+        if (!heroVideo) return;
+        if (reducedMotion.matches) {
+          heroVideo.pause();
+        } else {
+          void heroVideo.play().catch(() => undefined);
+        }
+      };
+      syncHeroMotion();
+      reducedMotion.addEventListener("change", syncHeroMotion);
       const menuButton = document.querySelector<HTMLButtonElement>(".menu-toggle");
       const menu = document.querySelector<HTMLElement>("#mobile-nav");
       const closeMenu = () => { if (!menu || !menuButton) return; menu.hidden = true; menuButton.setAttribute("aria-expanded", "false"); menuButton.setAttribute("aria-label", "Ouvrir le menu"); };
@@ -121,9 +139,9 @@ const links = [
 <style>
   .next-edition-card {
     max-width: none;
-    border-color: #238092;
-    background: radial-gradient(ellipse at top right, #00566890, transparent 70%), #080917;
-    box-shadow: 0 0 44px #00d8e51c, inset 0 1px #9cffff33;
+    border-color: #3b72d4;
+    background: radial-gradient(ellipse at top right, #478bff8a, transparent 70%), linear-gradient(140deg, #123d91, #070d2a 72%);
+    box-shadow: 0 0 44px #407eff38, inset 0 1px #b1edff55;
   }
 
   .countdown-intro {
@@ -141,14 +159,15 @@ const links = [
   .festival-quick-links button:disabled { opacity: .65; cursor: default; transform: none; }
   .countdown-intro .countdown-wordmark {
     margin: 0;
-    color: #b7ffff;
-    font-family: "Black Chancery", "Palatino Linotype", Georgia, serif;
-    font-size: clamp(2rem, 5vw, 3.75rem);
-    font-style: italic;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: .035em;
-    text-shadow: 0 0 .32em #00e4ea66;
+    color: #e8fbff;
+    font-family: Impact, "Arial Narrow", sans-serif;
+    font-size: clamp(2.1rem, 5vw, 4rem);
+    font-weight: 400;
+    line-height: .9;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    -webkit-text-stroke: 1px #8eeaff;
+    text-shadow: 0 0 .08em #fff, 0 0 .35em #408cff;
   }
   .countdown-ticket { min-height: 42px; padding: 8px 18px; color: #9cffff; }
 
@@ -161,18 +180,19 @@ const links = [
 
   .countdown-units > div {
     padding: clamp(18px, 4vw, 44px) 4px;
-    border: 1px solid #165365;
+    border: 1px solid #3d76df;
     border-radius: 14px;
-    background: linear-gradient(180deg, #072631, #07111e);
+    background: linear-gradient(180deg, #174baf, #081a54);
+    box-shadow: inset 0 1px #9aeaff35, 0 10px 28px #04123d66;
   }
 
   .countdown-units strong {
     display: block;
-    color: #9cffff;
+    color: #e9fbff;
     font-size: clamp(28px, 8vw, 100px);
     font-variant-numeric: tabular-nums;
     line-height: 1;
-    text-shadow: 0 0 .3em #00e4ea55;
+    text-shadow: 0 0 .3em #4f9cffcc;
   }
 
   .countdown-units span {
@@ -185,18 +205,40 @@ const links = [
   }
 
   .countdown-units .countdown-seconds {
-    border-color: #25899a;
+    border-color: #75dfff;
     animation: countdown-glow 1s ease-out infinite;
   }
 
   @keyframes countdown-glow {
-    from { box-shadow: inset 0 0 24px #00e4ea44; }
-    to { box-shadow: inset 0 0 8px #00e4ea08; }
+    from { box-shadow: inset 0 0 26px #68b4ff99; }
+    to { box-shadow: inset 0 0 8px #3979d733; }
   }
 
   @media (max-width: 540px) {
     .countdown-units { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
+
+  .next-edition-production {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(15px, 1.7vw, 21px);
+    font-weight: 700;
+    letter-spacing: .04em;
+    line-height: 1.7;
+    text-shadow: 0 2px 14px #001529;
+  }
+
+  .next-edition-location {
+    margin: 7px 0 0;
+    color: #90dfe5;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+  }
+
+  .next-edition-location::before { content: "⌖ "; color: #35e5e9; }
 
   @media (prefers-reduced-motion: reduce) {
     .countdown-units .countdown-seconds { animation: none; }
@@ -207,16 +249,42 @@ const links = [
   }
 
   .hero-glow {
-    background: radial-gradient(ellipse at center, #00384755, transparent 68%);
+    background: radial-gradient(ellipse at center, #254fbe80, transparent 64%), linear-gradient(180deg, #02071855 0%, #020718c7 100%);
   }
 
-  #festival-title {
-    width: min(100%, 480px);
-  }
-
-  #festival-title img {
-    display: block;
+  .hero-video {
+    position: absolute;
+    z-index: -4;
+    inset: 0;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  .hero-video-title {
+    position: absolute;
+    z-index: 1;
+    top: 42%;
+    left: 50%;
+    width: max-content;
+    max-width: calc(100% - 40px);
+    margin: 0;
+    transform: translate(-50%, -50%);
+    color: #bffaff;
+    font-family: Impact, "Arial Narrow", sans-serif;
+    font-size: clamp(40px, 7vw, 98px);
+    font-weight: 400;
+    line-height: .86;
+    letter-spacing: .055em;
+    text-align: center;
+    text-transform: uppercase;
+    -webkit-text-stroke: 1px #e0ffff;
+    text-shadow: 0 0 .04em #f5ffff, 0 0 .12em #47f5ff, 0 0 .42em #008eff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero-video { opacity: 0; }
+    :global(.hero-image) { opacity: .28; }
   }
 </style>

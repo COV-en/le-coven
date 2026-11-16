@@ -61,20 +61,34 @@
 .next-edition-card h3 { margin: 0 0 16px; font-size: clamp(28px, 4vw, 48px); }
 .next-edition-meta { margin: 0; color: #35e5e9; font-family: ui-monospace, monospace; letter-spacing: .08em; line-height: 1.7; text-transform: uppercase; }
 .next-edition-description { margin: 24px 0 0; max-width: 720px; color: #a6b9c6; line-height: 1.8; }
-.lineup { padding-block: clamp(56px, 8vw, 100px); border-bottom: 1px solid #123340; }
-.lineup-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 20px; }
-.artist-card { min-width: 0; overflow: hidden; border: 1px solid #123340; border-radius: 20px; background: linear-gradient(140deg, #07202b88, #080917); transition: transform .2s, border-color .2s, box-shadow .2s; }
-.artist-card:hover { transform: translateY(-5px); border-color: #057985; box-shadow: 0 18px 44px #0008; }
-.artist-listen { display: inline-block; margin: 8px 16px 0 0; color: var(--cyan); text-decoration: underline; }
-.artist-portrait { position: relative; aspect-ratio: 4 / 3; display: grid; place-items: center; background: radial-gradient(circle at 30% 20%, #096575, #090b1c 75%); }
-.artist-portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; }
-.artist-copy { padding: 20px; overflow-wrap: anywhere; }
-.artist-copy h3 { margin: 0 0 12px; }
-.artist-genres { color: #35e5e9; font-size: 13px; line-height: 1.6; margin: 0; }
+.lineup { padding-block: clamp(56px, 8vw, 112px); border-bottom: 1px solid #123340; }
+.lineup-day { margin-top: clamp(28px, 4vw, 56px); padding-top: clamp(20px, 3vw, 34px); border-top: 1px solid #294f9b; }
+.lineup-day + .lineup-day { margin-top: clamp(42px, 7vw, 88px); }
+.lineup-day-heading { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 18px; align-items: end; margin-bottom: 28px; }
+.lineup-day-index { color: #6adfff; font-family: ui-monospace, monospace; font-size: clamp(30px, 5vw, 54px); font-weight: 700; line-height: .85; letter-spacing: -.08em; text-shadow: 0 0 20px #277fffa1; }
+.lineup-date { margin: 5px 0 0; color: #f1f7ff; font-size: clamp(23px, 3.2vw, 38px); line-height: 1.05; text-transform: capitalize; }
+.lineup-day-count { margin: 0; color: #89b7ed; font-family: ui-monospace, monospace; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; white-space: nowrap; }
+.lineup-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 22px; }
+.artist-card { grid-column: span 3; min-width: 0; overflow: hidden; border: 1px solid #123340; border-radius: 18px; background: linear-gradient(145deg, #0a2053dd, #050a25); box-shadow: inset 0 1px #9cddff26; transition: transform .25s ease, border-color .25s ease, box-shadow .25s ease; }
+.artist-card:nth-child(5n + 1) { grid-column: span 6; }
+.artist-card:hover { transform: translateY(-7px); border-color: #67ddff; box-shadow: 0 22px 50px #06184eaa, inset 0 1px #aeeeff55; }
+.artist-portrait { position: relative; aspect-ratio: 4 / 5; overflow: hidden; background: radial-gradient(circle at 30% 20%, #2376d3, #080d30 75%); }
+.artist-card:nth-child(5n + 1) .artist-portrait { aspect-ratio: 16 / 9; }
+.artist-portrait::after { position: absolute; inset: 0; content: ""; background: linear-gradient(180deg, transparent 25%, #03071ad9 100%); }
+.artist-portrait img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 25%; transition: transform .45s ease; }
+.artist-card:hover .artist-portrait img { transform: scale(1.05); }
+.artist-portrait-copy { position: absolute; z-index: 1; right: 20px; bottom: 18px; left: 20px; }
+.artist-index { margin: 0 0 6px; color: #79dcff; font-family: ui-monospace, monospace; font-size: 10px; letter-spacing: .15em; text-transform: uppercase; }
+.artist-portrait-copy h3, .artist-copy h3 { margin: 0; color: #f6fbff; font-size: clamp(23px, 2.3vw, 34px); line-height: .98; letter-spacing: -.04em; overflow-wrap: anywhere; }
+.artist-copy { min-height: 112px; padding: 18px 20px 20px; overflow-wrap: anywhere; }
+.artist-card:not(.has-image) .artist-copy { display: flex; min-height: 176px; flex-direction: column; justify-content: end; background: radial-gradient(circle at 90% 8%, #2d73e366, transparent 52%); }
+.artist-genres { margin: 0; color: #7be6ff; font-size: 13px; line-height: 1.6; }
+.artist-listen { display: inline-block; margin: 12px 15px 0 0; color: var(--cyan); font-size: 13px; text-decoration: none; }
+.artist-listen:hover { color: #fff; text-decoration: underline; }
 .artist-bio { color: #a6b9c6; line-height: 1.8; margin: 16px 0 0; }
-@media (max-width: 1199px) { .lineup-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-@media (max-width: 899px) { .lineup-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (max-width: 599px) { .lineup-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 999px) { .artist-card { grid-column: span 4; } .artist-card:nth-child(5n + 1) { grid-column: span 8; } }
+@media (max-width: 699px) { .lineup-day-heading { grid-template-columns: auto minmax(0, 1fr); } .lineup-day-count { grid-column: 2; } .artist-card,.artist-card:nth-child(5n + 1) { grid-column: span 6; } .artist-card:nth-child(5n + 1) .artist-portrait { aspect-ratio: 4 / 5; } }
+@media (max-width: 449px) { .lineup-grid { gap: 14px; } .artist-card,.artist-card:nth-child(5n + 1) { grid-column: span 12; } }
 .artist-detail { padding-block: clamp(48px, 7vw, 96px); }
 .artist-back { display: inline-block; margin-bottom: 28px; color: #38dfe4; font-size: 14px; }
 .artist-detail-hero { display: grid; grid-template-columns: minmax(280px, .82fr) minmax(0, 1.18fr); gap: clamp(36px, 7vw, 100px); align-items: center; }
@@ -129,3 +143,43 @@
 .helloasso-widget { width: 100%; min-height: 720px; border: 1px solid #12505a; border-radius: 24px; background: white; }
 @media(max-width:899px){.ticketing-stage{min-height:0;grid-template-columns:1fr}.ticket-checkout{width:min(100%,500px);margin-inline:auto}.ticketing-main{text-align:center}.ticket-live{margin-inline:auto}.ticketing-lead{margin-inline:auto}.ticketing-facts{justify-content:center}.ticketing-title{font-size:clamp(58px,17vw,100px)}}
 @media(max-width:499px){.ticketing-hero{padding-inline:18px}.ticketing-main{text-align:left}.ticket-live{margin-inline:0}.ticketing-lead{margin-inline:0}.ticketing-facts{justify-content:flex-start}.ticket-checkout{padding:20px;border-radius:24px}.ticketing-reassurance{justify-content:flex-start;padding-inline:4px}.ticketing-title{font-size:clamp(54px,18vw,76px)}}
+
+/* The navigation and hero copy stay legible over the Blue Moon video. */
+.site-header { background: #061833f2; border-top-color: #12dce8; box-shadow: 0 8px 30px #02101fa8; }
+.nav-link { color: #e2f8ff; }
+.nav-link:hover { color: #fff; }
+.nav-link.is-active { border-color: #37eff3; background: #0b4669; color: #fff; }
+.coven-link { color: #80e8f0; }
+.coven-link:hover { color: #fff; }
+.festival-meta { border-color: #b6f9ff; background: #021b35b8; padding: 10px 28px; color: #fff; font-size: clamp(11px, 1.3vw, 15px); font-weight: 700; text-shadow: 0 1px 10px #00223d; }
+.festival-label { color: #fff; font-size: clamp(15px, 2vw, 28px); font-weight: 800; text-shadow: 0 2px 16px #001529; }
+
+/* Blue Moon palette: deep navy, electric blue and a subtle violet echo the hero film. */
+:root { --cyan: #43d7ff; --muted: #aab9dc; color: #f4f7ff; background: #020718; }
+body { background: radial-gradient(circle at 50% -20%, #183f9b38, transparent 42%), #020718; }
+.site-header { background: #061944f5; border-top-color: #4be1ff; box-shadow: 0 8px 34px #000b; }
+#mobile-nav { background: #071b47; border-bottom-color: #2859ae; }
+.nav-link.is-active { border-color: #73ecff; background: #17499b; }
+.button-primary { background: linear-gradient(135deg, #43d7ff, #4c83ff); color: #04112b; box-shadow: 0 0 32px #317dff66; }
+.button-primary:hover { background: linear-gradient(135deg, #74e6ff, #6f9bff); box-shadow: 0 0 38px #4a80ff88; }
+.button-outline { border-color: #365fb6; color: #b9eaff; background: #081b45b8; }
+.button-outline:hover { background: #14377e; border-color: #72dfff; color: #fff; }
+.eyebrow,.card-number { color: #75dcff; }
+.next-edition,.festival-story,.lineup { border-color: #234a97; }
+.next-edition-card,.info-grid article,.artist-card,.volunteer-card { border-color: #294f9b; background: linear-gradient(140deg, #0a2053dd, #050a25); }
+.artist-card:hover,.practical-grid .practical-card:hover { border-color: #60dfff; box-shadow: 0 18px 44px #071b5499; }
+.next-edition-meta,.artist-genres,.artist-detail-genres { color: #7be6ff; }
+.next-edition-description,.story-copy p,.practical-hero-copy > p:not(.eyebrow),.practical-section-heading > p,.artist-bio,.artist-detail-intro,.artist-biography p:not(.eyebrow) { color: #b9c8ed; }
+.text-link,.artist-listen,.artist-back,.story-sources a { color: #79ddff; }
+.information { background: radial-gradient(circle at 14% 12%, #2349a64d, transparent 28%), #03091f; }
+.practical-hero-visual,.artist-detail-portrait { border-color: #315aac; background: #07143a; box-shadow: 0 30px 100px #000b, 0 0 60px #315eff32; }
+.venue-grid .venue-card { background: radial-gradient(circle at 88% 20%, #337cff5e, transparent 34%), linear-gradient(130deg, #0d2b68, #050a25 62%); }
+.venue-card::after { color: #71e4ff; }
+.ticketing-page { background: radial-gradient(circle at 76% 16%, #285fd551, transparent 30%), #020718; }
+.ticket-checkout { border-color: #355db0; background: linear-gradient(155deg, #0c2d6b, #060b27 58%, #07133a); box-shadow: 0 32px 90px #0009, 0 0 70px #376eff36; }
+.ticket-checkout-top,.ticket-checkout-copy p { color: #76e6ff; }
+.ticketing-reassurance { border-color: #274b94; color: #a4b9e5; }
+.ticketing-reassurance span::before { color: #69dfff; }
+footer,.contact-section { border-color: #234a97; color: #aab9dc; }
+.brand strong { color: #f5fbff; font-size: 19px; font-weight: 900; letter-spacing: 1.3px; text-shadow: 0 0 12px #4ecaffaa; }
+.brand small { color: #89e7ff; font-size: 11px; letter-spacing: 2.4px; text-shadow: 0 0 10px #247dffaa; }

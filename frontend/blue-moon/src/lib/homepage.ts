@@ -12,11 +12,11 @@ async function loadEdition() {
   if (!edition) return;
   const venues = edition.lieux || [];
   const editionMeta = [editionDates(edition.dateDebut, edition.dateFin), ...venues.map(venue => [venue.nom, venue.ville].filter(Boolean).join(", "))].filter(Boolean).join(" · ");
-  text("edition-meta", editionMeta);
-  text("edition-description", edition.descriptionCourte);
+  const locationLabel = venues.map(venue => [venue.nom, venue.ville].filter(Boolean).join(", ")).filter(Boolean).join(" · ");
   text("next-edition-name", edition.nom);
   text("next-edition-meta", editionMeta);
   text("next-edition-description", edition.descriptionCourte);
+  text("next-edition-location", locationLabel);
   for (const [id, url] of [["festival-merch", edition.lienBoutique], ["festival-facebook", edition.lienEvenementFacebook]]) {
     const link = document.querySelector<HTMLAnchorElement>(`#${id}`)!;
     const href = safeUrl(url);
